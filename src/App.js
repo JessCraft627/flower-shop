@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components'
 import flower from './annie-spratt-197809-unsplash.jpg'
+import { Transition, animated } from 'react-spring'
+import Body from './body'
+import Product from './product'
+import Collections from './collections'
 
 const Nav = styled.p`
-  font-size: 20px;
+  font-size: 24px;
   color: white;
   padding: 15px 25px;
   text-shadow: 1px 1px black;
@@ -11,30 +15,59 @@ const Nav = styled.p`
   font-family: 'Oswald', sans-serif;
   font-weight: 500;
 `
+const rotate = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
+const Rotate = styled.div`
+  animation: ${rotate} 2.5s ease-in ;
+`;
+const rotated = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: .9;
+  }
+`;
+
+const Rotated = styled.div`
+  animation: ${rotated} 3s ease-in ;
+`;
 
 const Header = styled.header`
   height: 60px;
-  padding: 5px 0 150px;
+  padding: 5px 0 300px;
   display:flex;
   align-items: center;
   justify-content: flex-end;
 `
 
 const Main = styled.div`
-  height: 900px;
+  height: 1200px;
   background-image: url(${flower});
   background-position: center;
   background-size: cover;
   width: 100%;
   padding-top:20px;
 `
+const LastLink = styled(Nav)`
+  padding-right:40px;
+`;
+
 const ShopButton = styled.button`
    margin: 50px;
    font-family: 'Oswald', sans-serif;
    font-weight: 300;
    border-radius: 5px;
    color:white;
-   background:#6f203d;
+   background: ${props => props.primary ? "#6f203d" : 'white'};
+   color: ${props => props.primary ? "white" : "#6f203d"};
    font-size: 2rem;
    border: 1px solid #6f203d;
    letter-spacing: 6px;
@@ -46,12 +79,33 @@ const Tagline = styled.h1`
     text-transform: uppercase;
     line-height: 95%;
     text-shadow: 1px 1px black;
-    font-size: 8rem;
-    color:white;
+    font-size: 9rem;
+    color: ${props => props.primary ? "#6f203d;" : "white"};
     font-family: 'Oswald', sans-serif;
 `
 
+const Footer = styled.footer`
+  margin: 300px 0px 0px;
+  background: #6f203d;
+  padding: 5px;
+  color: white;
+  font-size: 2rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 300;
+  display:flex;
+  justify-content: space-around;
+`
+
 class App extends Component {
+
+  state = {
+    showComponent: false
+  }
+  toggle = (e) => {
+    this.setState({
+      showComponent: !this.state.showComponent
+    })
+  }
 
   render() {
     return (
@@ -64,14 +118,32 @@ class App extends Component {
             <Nav>
               Location
             </Nav>
-            <Nav>
+            <LastLink>
               Contact
-            </Nav>
+            </LastLink>
           </Header>
-          <Tagline>Fresh</Tagline>
-          <Tagline>Blooms</Tagline>
-          <ShopButton>Shop Plants</ShopButton>
+          <Rotate><Tagline>Fresh</Tagline>   </Rotate>
+          <Rotated><Tagline>Blooms</Tagline></Rotated>
+          <ShopButton primary>Shop Now</ShopButton>
         </Main>
+
+        <Body />
+        <Product toggle={this.toggle}/>
+        <Transition
+          native
+          items={this.state.showComponent}
+          from={{ opacity: 0 }}
+          enter={{ opacity: 1}}
+          leave={{ opacity: 0 }}
+          >
+          {show => show && (props => (
+            <animated.div style={props}>
+              <Collections />
+            </animated.div>
+          ))}
+        </Transition>
+        <Footer> <p>Get Started</p> <p>Need Help?</p> <p>Let's Keep in Touch!</p></Footer>
+
       </div>
     );
   }
